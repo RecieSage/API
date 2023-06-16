@@ -5,5 +5,9 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+
+  "ConnectionStrings": {
+    "SQLServerConnection": "Server=domain.do;Database=database;Integrated Security=False;User ID=username;Password=password;TrustServerCertificate=true"
+  }
 }
