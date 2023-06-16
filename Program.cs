@@ -30,8 +30,6 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
     .Build();
 
-string sqlConnectionString = configuration.GetConnectionString("SQLServerConnection");
-
 // Set SQL connection string as env variable
 Environment.SetEnvironmentVariable("SQL_CONNECTION_STRING", configuration.GetConnectionString("SQLServerConnection"));
 
