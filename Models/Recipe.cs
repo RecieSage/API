@@ -10,4 +10,6 @@ public partial class Recipe
     public string Name { get; set; } = null!;
 
     public string Instructions { get; set; } = null!;
+
+    public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }

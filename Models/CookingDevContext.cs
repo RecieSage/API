@@ -31,7 +31,6 @@ public partial class CookingDevContext : DbContext
             entity.ToTable("Ingredient");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Amount).HasColumnName("amount");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
@@ -56,12 +55,23 @@ public partial class CookingDevContext : DbContext
 
         modelBuilder.Entity<RecipeIngredient>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Recipe_Ingredient");
+            entity.HasKey(e => new { e.RecipeId, e.IngredientId });
 
-            entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
+            entity.ToTable("Recipe_Ingredient");
+
             entity.Property(e => e.RecipeId).HasColumnName("recipe_id");
+            entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
+            entity.Property(e => e.Amount).HasColumnName("amount");
+
+            entity.HasOne(d => d.Ingredient).WithMany(p => p.RecipeIngredients)
+                .HasForeignKey(d => d.IngredientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Recipe_Ingredient_Ingredient");
+
+            entity.HasOne(d => d.Recipe).WithMany(p => p.RecipeIngredients)
+                .HasForeignKey(d => d.RecipeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Recipe_Ingredient_Recipe");
         });
 
         OnModelCreatingPartial(modelBuilder);

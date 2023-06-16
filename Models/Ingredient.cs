@@ -9,7 +9,7 @@ public partial class Ingredient
 
     public string Name { get; set; } = null!;
 
-    public int Amount { get; set; }
-
     public string Unit { get; set; } = null!;
+
+    public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }
