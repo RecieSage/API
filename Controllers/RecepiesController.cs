@@ -1,4 +1,4 @@
-using API.Models;
+﻿using API.Models;
 using API.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,10 +6,17 @@ using System.Data.Entity;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// API Route for managing recipes
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class RecepiesController : ControllerBase
     {
+        /// <summary>
+        /// Endpoint for getting all recipes
+        /// </summary>
+        /// <returns>Returns an Array of <see cref="RecepieMinDTO"/></returns>
         [HttpGet]
         public IEnumerable<RecepieMinDTO> GetAllRecipes()
         {
@@ -24,7 +31,6 @@ namespace API.Controllers
                     {
                         Id = recipe.Id,
                         Name = recipe.Name,
-                        
                     });
                 }
 
@@ -32,14 +38,67 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Endpoint for getting a specific recipe by its id
+        /// </summary>
+        /// <param name="id"><see cref="Recipe.Id"/> of a recipe</param>
+        /// <returns>Returns a <see cref="RecepieDTO"/></returns>
+        [HttpGet("{id}")]
+        public ActionResult<RecepieDTO> GetRecipe(int id)
+        {
+            // Return a Database Entry
+            using (var db = new CookingDevContext())
+            {
+                Recipe? recipe = db.Recipes.Find(id);
 
+                if (recipe == null)
+                {
+                    return this.NotFound();
+                }
+
+                RecepieDTO recipeDTO = new ()
+                {
+                    Id = recipe.Id,
+                    Name = recipe.Name,
+                    Instructions = recipe.Instructions,
+                    ingredients = new List<IngredientDTO>(),
+                };
+                List<RecipeIngredient> recipeIngredients = db.RecipeIngredients.Where(ri => ri.RecipeId == recipe.Id).ToList();
+
+                foreach (var recipeIngredient in recipeIngredients)
+                {
+                    var ingredient = db.Ingredients.Find(recipeIngredient.IngredientId);
+
+                    if (ingredient == null)
+                    {
+                        continue;
+                    }
+
+                    recipeDTO.ingredients.Add(new IngredientDTO
+                    {
+                        Id = ingredient.Id,
+                        Name = ingredient.Name,
+                        Unit = ingredient.Unit,
+                        Amount = recipeIngredient.Amount,
+                    });
+                }
+
+                return this.Ok(recipeDTO);
+            }
+        }
+
+        /// <summary>
+        /// Endpoint to create a new recipe and save it to the database
+        /// </summary>
+        /// <param name="recipedto"><see cref="RecepieDTO"/> Object</param>
+        /// <returns>Returns the created <see cref="RecepieDTO"/></returns>
         [HttpPost]
-        public RecepieDTO AddRecipe(RecepieDTO recipedto)
+        public ActionResult<RecepieDTO> AddRecipe(RecepieDTO recipedto)
         {
             var recipeInDB = new Recipe
             {
                 Name = recipedto.Name,
-                Instructions = recipedto.Instructions
+                Instructions = recipedto.Instructions,
             };
 
             // Create a Recipe Entry and get the ID
@@ -81,26 +140,26 @@ namespace API.Controllers
             return recipedto;
         }
 
-        [HttpPut]
-        public void UpdateRecipe(Recipe recipe)
-        {
-            // Update a Database Entry
-            using (var db = new CookingDevContext())
-            {
-                db.Recipes.Update(recipe);
-                db.SaveChanges();
-            }
-        }
-
+        /// <summary>
+        /// Delete a recipe by its id from the database
+        /// </summary>
+        /// <param name="id"><see cref="Recipe.Id"/> of a recipe</param>
+        /// <returns>Statuscode 200 if successfull</returns>
         [HttpDelete("{id}")]
-        public void DeleteRecipe(int id)
+        public ActionResult DeleteRecipe(int id)
         {
             // Delete a Database Entry
             using (var db = new CookingDevContext())
             {
                 var recipe = db.Recipes.Find(id);
+                if (recipe == null)
+                {
+                    return this.NotFound();
+                }
+
                 db.Recipes.Remove(recipe);
                 db.SaveChanges();
+                return this.Ok();
             }
         }
     }
