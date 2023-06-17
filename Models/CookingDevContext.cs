@@ -54,22 +54,19 @@ public partial class CookingDevContext : DbContext
 
         modelBuilder.Entity<RecipeIngredient>(entity =>
         {
-            entity.HasKey(e => new { e.RecipeId, e.IngredientId });
-
             entity.ToTable("Recipe_Ingredient");
 
-            entity.Property(e => e.RecipeId).HasColumnName("recipe_id");
-            entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
+            entity.Property(e => e.RecipeId).HasColumnName("recipe_id");
 
             entity.HasOne(d => d.Ingredient).WithMany(p => p.RecipeIngredients)
                 .HasForeignKey(d => d.IngredientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Recipe_Ingredient_Ingredient");
 
             entity.HasOne(d => d.Recipe).WithMany(p => p.RecipeIngredients)
                 .HasForeignKey(d => d.RecipeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Recipe_Ingredient_Recipe");
         });
 
