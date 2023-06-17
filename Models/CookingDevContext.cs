@@ -35,8 +35,7 @@ public partial class CookingDevContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("name");
             entity.Property(e => e.Unit)
-                .HasMaxLength(10)
-                .IsFixedLength()
+                .HasMaxLength(50)
                 .HasColumnName("unit");
         });
 

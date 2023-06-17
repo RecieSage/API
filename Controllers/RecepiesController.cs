@@ -162,5 +162,61 @@ namespace API.Controllers
                 return this.Ok();
             }
         }
+
+        [HttpPut("{id}")]
+        public ActionResult<RecepieDTO> UpdateRecipe(int id, RecepieDTO recipedto)
+        {
+            // Update a Database Entry
+            using (var db = new CookingDevContext())
+            {
+                var recipe = db.Recipes.Find(id);
+                if (recipe == null)
+                {
+                    return this.NotFound();
+                }
+
+                recipe.Name = recipedto.Name;
+                recipe.Instructions = recipedto.Instructions;
+                db.SaveChanges();
+            }
+
+            // Delete all RecipeIngredient Entries
+            using (var db = new CookingDevContext())
+            {
+                var recipeIngredients = db.RecipeIngredients.Where(ri => ri.RecipeId == id);
+                db.RecipeIngredients.RemoveRange(recipeIngredients);
+                db.SaveChanges();
+            }
+
+            // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
+            using (var db = new CookingDevContext())
+            {
+                foreach (var ingredient in recipedto.ingredients)
+                {
+                    var ingredientInDb = db.Ingredients.FirstOrDefault(i => (i.Name == ingredient.Name) && (i.Unit == ingredient.Unit));
+                    if (ingredientInDb == null)
+                    {
+                        ingredientInDb = new Ingredient
+                        {
+                            Name = ingredient.Name,
+                            Unit = ingredient.Unit,
+                        };
+                        db.Ingredients.Add(ingredientInDb);
+                        db.SaveChanges();
+                    }
+
+                    var recipeIngredient = new RecipeIngredient
+                    {
+                        RecipeId = id,
+                        IngredientId = ingredientInDb.Id,
+                        Amount = ingredient.Amount,
+                    };
+                    db.RecipeIngredients.Add(recipeIngredient);
+                    db.SaveChanges();
+                }
+            }
+
+            return recipedto;
+        }
     }
 }
