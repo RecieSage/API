@@ -3,6 +3,7 @@ using API.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
+using System.Net.Mime;
 
 namespace API.Controllers
 {
@@ -10,13 +11,16 @@ namespace API.Controllers
     /// API Route for managing recipes
     /// </summary>
     [ApiController]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
     [Route("[controller]")]
     public class RecepiesController : ControllerBase
     {
         /// <summary>
-        /// Endpoint for getting all recipes
+        /// Gets all recipes
         /// </summary>
-        /// <returns>Returns an Array of <see cref="RecepieMinDTO"/></returns>
+        /// <returns>Returns an Array of repipes</returns>
+        /// <response code="200">Returns an Array of repipes</response>
         [HttpGet]
         public IEnumerable<RecepieMinDTO> GetAllRecipes()
         {
@@ -39,10 +43,12 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Endpoint for getting a specific recipe by its id
+        /// Gets a specific recipe by id
         /// </summary>
         /// <param name="id"><see cref="Recipe.Id"/> of a recipe</param>
-        /// <returns>Returns a <see cref="RecepieDTO"/></returns>
+        /// <returns>Returns the recipe that belongs to the ID</returns>
+        /// <response code="200">Returns the recipe that belongs to the ID</response>
+        /// <response code="404">Returned if no recipe is found that belonges to that id</response>
         [HttpGet("{id}")]
         public ActionResult<RecepieDTO> GetRecipe(int id)
         {
@@ -56,7 +62,7 @@ namespace API.Controllers
                     return this.NotFound();
                 }
 
-                RecepieDTO recipeDTO = new ()
+                RecepieDTO recipeDTO = new()
                 {
                     Id = recipe.Id,
                     Name = recipe.Name,
@@ -88,10 +94,11 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Endpoint to create a new recipe and save it to the database
+        /// Create a new recipe
         /// </summary>
-        /// <param name="recipedto"><see cref="RecepieDTO"/> Object</param>
-        /// <returns>Returns the created <see cref="RecepieDTO"/></returns>
+        /// <param name="recipedto">A recipe JSON Objekt</param>
+        /// <returns>Returnes the newly created recipe</returns>
+        /// <response code="200">Returnes the newly created recipe</response>
         [HttpPost]
         public ActionResult<RecepieDTO> AddRecipe(RecepieDTO recipedto)
         {
@@ -109,7 +116,7 @@ namespace API.Controllers
                 recipedto.Id = recipeInDB.Id;
             }
 
-           // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
+            // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
             using (var db = new CookingDevContext())
             {
                 foreach (var ingredient in recipedto.ingredients)
@@ -141,10 +148,12 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Delete a recipe by its id from the database
+        /// Delete a recipe by its id
         /// </summary>
         /// <param name="id"><see cref="Recipe.Id"/> of a recipe</param>
-        /// <returns>Statuscode 200 if successfull</returns>
+        /// <returns>nothing</returns>
+        /// <response code="200">Returnes if successfully deleted</response>
+        /// <response code="404">Returned if no recipe is found that belonges to that id</response>
         [HttpDelete("{id}")]
         public ActionResult DeleteRecipe(int id)
         {
@@ -163,6 +172,14 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Modify a recipe by its id
+        /// </summary>
+        /// <param name="id">The ID of the Recipe that will be edited</param>
+        /// <param name="recipedto">A recipe JSON Objekt</param>
+        /// <returns>Returnes the edited recipe</returns>
+        /// <response code="200">Returnes the edited recipe</response>
+        /// <response code="404">Returned if no recipe is found that belonges to that id</response>
         [HttpPut("{id}")]
         public ActionResult<RecepieDTO> UpdateRecipe(int id, RecepieDTO recipedto)
         {
