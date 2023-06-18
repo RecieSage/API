@@ -62,12 +62,12 @@ namespace API.Controllers
                     return this.NotFound();
                 }
 
-                RecepieDTO recipeDTO = new()
+                RecepieDTO recipeDTO = new ()
                 {
                     Id = recipe.Id,
                     Name = recipe.Name,
                     Instructions = recipe.Instructions,
-                    ingredients = new List<IngredientDTO>(),
+                    Ingredients = new List<IngredientDTO>(),
                 };
                 List<RecipeIngredient> recipeIngredients = db.RecipeIngredients.Where(ri => ri.RecipeId == recipe.Id).ToList();
 
@@ -80,7 +80,7 @@ namespace API.Controllers
                         continue;
                     }
 
-                    recipeDTO.ingredients.Add(new IngredientDTO
+                    recipeDTO.Ingredients.Add(new IngredientDTO
                     {
                         Id = ingredient.Id,
                         Name = ingredient.Name,
@@ -119,7 +119,7 @@ namespace API.Controllers
             // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
             using (var db = new CookingDevContext())
             {
-                foreach (var ingredient in recipedto.ingredients)
+                foreach (var ingredient in recipedto.Ingredients)
                 {
                     var ingredientInDb = db.Ingredients.FirstOrDefault(i => (i.Name == ingredient.Name) && (i.Unit == ingredient.Unit));
                     if (ingredientInDb == null)
@@ -208,7 +208,7 @@ namespace API.Controllers
             // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
             using (var db = new CookingDevContext())
             {
-                foreach (var ingredient in recipedto.ingredients)
+                foreach (var ingredient in recipedto.Ingredients)
                 {
                     var ingredientInDb = db.Ingredients.FirstOrDefault(i => (i.Name == ingredient.Name) && (i.Unit == ingredient.Unit));
                     if (ingredientInDb == null)

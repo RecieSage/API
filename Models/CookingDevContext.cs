@@ -4,26 +4,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Models;
 
+/// <summary>
+/// Database context manager
+/// </summary>
 public partial class CookingDevContext : DbContext
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// </summary>
     public CookingDevContext()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// </summary>
+    /// <param name="options">Instance of <see cref="DbContextOptions"/></param>
     public CookingDevContext(DbContextOptions<CookingDevContext> options)
         : base(options)
     {
     }
 
+    /// <summary>
+    /// Gets or sets the <see cref="Ingredient"/> table
+    /// </summary>
     public virtual DbSet<Ingredient> Ingredients { get; set; }
 
+    /// <summary>
+    /// Gets or sets the <see cref="Recipe"/> table
+    /// </summary>
     public virtual DbSet<Recipe> Recipes { get; set; }
 
+    /// <summary>
+    /// Gets or sets the <see cref="RecipeIngredient"/> table
+    /// </summary>
     public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
+    /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
 
+    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Ingredient>(entity =>
@@ -70,7 +91,7 @@ public partial class CookingDevContext : DbContext
                 .HasConstraintName("FK_Recipe_Ingredient_Recipe");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        this.OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
