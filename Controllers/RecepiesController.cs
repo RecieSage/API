@@ -19,6 +19,7 @@ namespace API.Controllers
         /// <summary>
         /// Gets all recipes and filters by search query string
         /// </summary>
+        /// <param name="search">Search query that is filtered agaínst</param>
         /// <returns>Returns an Array of repipes</returns>
         /// <response code="200">Returns an Array of repipes</response>
         [HttpGet]
@@ -27,13 +28,18 @@ namespace API.Controllers
             // Return all Database Entries
             using (var db = new CookingDevContext())
             {
-                var recipes = db.Recipes.ToList();
-                var recipesDTO = new List<RecepieMinDTO>();
+                var recipes = new List<Recipe>();
 
                 if (search != null)
                 {
-                    recipes = recipes.Where(r => r.Name.Contains(search)).ToList();
+                    recipes = db.Recipes.Where(r => r.Name.Contains(search)).ToList();
                 }
+                else
+                {
+                    recipes = db.Recipes.ToList();
+                }
+
+                var recipesDTO = new List<RecepieMinDTO>();
 
                 foreach (var recipe in recipes)
                 {
