@@ -17,28 +17,40 @@ namespace API.Controllers
     public class RecepiesController : ControllerBase
     {
         /// <summary>
-        /// Gets all recipes
+        /// Gets all recipes and filters by search query string
         /// </summary>
+        /// <param name="search">Search query that is filtered agaínst</param>
         /// <returns>Returns an Array of repipes</returns>
         /// <response code="200">Returns an Array of repipes</response>
         [HttpGet]
-        public IEnumerable<RecepieMinDTO> GetAllRecipes()
+        public ActionResult<List<RecepieMinDTO>> GetRecipes([FromQuery] string? search)
         {
-            // Return all Database Entrys
+            // Return all Database Entries
             using (var db = new CookingDevContext())
             {
-                var recipes = db.Recipes;
-                var recipesMinDTO = new List<RecepieMinDTO>();
+                var recipes = new List<Recipe>();
+
+                if (search != null)
+                {
+                    recipes = db.Recipes.Where(r => r.Name.Contains(search)).ToList();
+                }
+                else
+                {
+                    recipes = db.Recipes.ToList();
+                }
+
+                var recipesDTO = new List<RecepieMinDTO>();
+
                 foreach (var recipe in recipes)
                 {
-                    recipesMinDTO.Add(new RecepieMinDTO
+                    recipesDTO.Add(new RecepieMinDTO
                     {
                         Id = recipe.Id,
                         Name = recipe.Name,
                     });
                 }
 
-                return recipesMinDTO;
+                return this.Ok(recipesDTO);
             }
         }
 
