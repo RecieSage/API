@@ -31,20 +31,90 @@ namespace API.Backend
             }
         }
 
+        /// <summary>
+        ///  Attempts to execute all update scripts that haven't been executed yet.
+        /// </summary>
         public void Update()
         {
-            //Get all scripts that have not been executed
+            List<string> updateScripts = this.GetNotExecutedScripts();
 
-            //Execute all scripts
+            updateScripts.ForEach(script => this.ExecuteScript(script));
+        }
 
-            //Update DbScript table
+        private void ExecuteScript(string scriptid)
+        {
+            using var db = new CookingDataContext();
+            try
+            {
+                string filePath = $"DatabaseUpdateScripts/{scriptid}.sql";
+                string scriptContent = File.ReadAllText(filePath);
+
+                db.Database.ExecuteSqlRaw(scriptContent);
+
+                if (db.DbScripts.Any(script => script.ScriptId.Equals(scriptid)))
+                {
+                    DbScript dbScript = db.DbScripts.First(script => script.ScriptId.Equals(scriptid));
+                    dbScript.Success = true;
+                    dbScript.LastExecution = DateTime.Now;
+                    dbScript.Output = null;
+
+                    db.DbScripts.Update(dbScript);
+                }
+                else
+                {
+                    DbScript dbScript = new DbScript
+                    {
+                        ScriptId = scriptid,
+                        Success = true,
+                        LastExecution = DateTime.Now,
+                    };
+
+                    db.DbScripts.Add(dbScript);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                if (db.DbScripts.Any(script => script.ScriptId.Equals(scriptid)))
+                {
+                    DbScript dbScript = db.DbScripts.First(script => script.ScriptId.Equals(scriptid));
+                    dbScript.Success = false;
+                    dbScript.LastExecution = DateTime.Now;
+                    dbScript.Output = $"Message:\n{e.Message}\n\nStacktrace:\n{e.StackTrace}";
+
+                    db.DbScripts.Update(dbScript);
+                }
+                else
+                {
+                    DbScript dbScript = new DbScript
+                    {
+                        ScriptId = scriptid,
+                        Success = false,
+                        LastExecution = DateTime.Now,
+                        Output = $"Message:\n{e.Message}\n\nStacktrace:\n{e.StackTrace}",
+                    };
+
+                    db.DbScripts.Add(dbScript);
+                }
+            }
+
+            db.SaveChanges();
         }
 
         private List<string> GetNotExecutedScripts()
         {
             using var db = new CookingDataContext();
 
-            List<DbScript> executedScripts = db.DbScripts.Where(script => script.Success == true).ToList();
+            List<DbScript> executedScripts;
+            if (this.DoesDbScriptTableExist())
+            {
+               executedScripts = db.DbScripts.Where(script => script.Success == true).ToList();
+            }
+            else
+            {
+                executedScripts = new List<DbScript>();
+            }
+
             List<string> allScriptIds = this.GetScriptNames();
 
             return MissingScriptsCompare(executedScripts, allScriptIds);

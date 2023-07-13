@@ -1,3 +1,4 @@
+using API.Backend;
 using System.Configuration;
 using System.Reflection;
 
@@ -49,6 +50,12 @@ namespace API
 
             // Set SQL connection string as env variable
             Environment.SetEnvironmentVariable("SQL_CONNECTION_STRING", configuration.GetConnectionString("SQLServerConnection"));
+
+            DatabaseUpdater databaseUpdater = new DatabaseUpdater();
+            if (databaseUpdater.IsUpdateAvailable())
+            {
+                databaseUpdater.Update();
+            }
 
             app.UseHttpsRedirection();
 
