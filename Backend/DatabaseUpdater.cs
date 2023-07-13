@@ -21,8 +21,6 @@ namespace API.Backend
         /// </returns>
         public bool IsUpdateAvailable()
         {
-            this.DoesDbScriptTableExist();
-
             if (this.DoesDbScriptTableExist() && this.GetNotExecutedScripts().Count == 0)
             {
                 return false;
@@ -47,14 +45,12 @@ namespace API.Backend
             using var db = new CookingDataContext();
 
             List<DbScript> executedScripts = db.DbScripts.Where(script => script.Success == true).ToList();
+            List<string> allScriptIds = this.GetScriptNames();
 
-            List<string> allScriptIds = this.GetScripts();
-
-
-            return new List<string>();
+            return MissingScriptsCompare(executedScripts, allScriptIds);
         }
 
-        private List<string> GetScripts()
+        private List<string> GetScriptNames()
         {
             List<string> scripts = new List<string>();
 
@@ -62,7 +58,7 @@ namespace API.Backend
 
             foreach (string filePath in filePaths)
             {
-                string fileName = Path.GetFileName(filePath);
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
                 scripts.Add(fileName);
             }
 
@@ -95,6 +91,21 @@ namespace API.Backend
 
             return false;
 
+        }
+
+        private static List<string> MissingScriptsCompare(List<DbScript> executedScripts, List<string> allScripts)
+        {
+            List<string> missingScripts = new List<string>();
+
+            foreach (string script in allScripts)
+            {
+                if (!executedScripts.Any(executedScript => script.Equals(executedScript.ScriptId)))
+                {
+                    missingScripts.Add(script);
+                }
+            }
+
+            return missingScripts;
         }
     }
 }
