@@ -52,18 +52,15 @@ public partial class CookingDataContext : DbContext
     {
         modelBuilder.Entity<DbScript>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("DB_Scripts");
+            entity.ToTable("DB_Scripts");
 
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.LastExecution)
                 .HasColumnType("datetime")
                 .HasColumnName("last_execution");
             entity.Property(e => e.Output).HasColumnName("output");
             entity.Property(e => e.ScriptId)
                 .HasMaxLength(10)
-                .IsUnicode(false)
-                .IsFixedLength()
                 .HasColumnName("script_id");
             entity.Property(e => e.Success).HasColumnName("success");
         });

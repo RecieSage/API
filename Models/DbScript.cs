@@ -8,9 +8,8 @@ namespace API.Models;
 /// </summary>
 public partial class DbScript
 {
-    /// <summary>
-    /// The id of the script
-    /// </summary>
+    public int Id { get; set; }
+
     public string ScriptId { get; set; } = null!;
 
     /// <summary>
