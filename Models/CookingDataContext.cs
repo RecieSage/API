@@ -45,11 +45,9 @@ public partial class CookingDataContext : DbContext
     /// </summary>
     public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
-    /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     => optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
 
-    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DbScript>(entity =>
@@ -62,7 +60,11 @@ public partial class CookingDataContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("last_execution");
             entity.Property(e => e.Output).HasColumnName("output");
-            entity.Property(e => e.ScriptId).HasColumnName("script_id");
+            entity.Property(e => e.ScriptId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("script_id");
             entity.Property(e => e.Success).HasColumnName("success");
         });
 

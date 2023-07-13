@@ -5,6 +5,9 @@ using System.Data;
 
 namespace API.Backend
 {
+    /// <summary>
+    /// Managemanet Instance of Database Updates
+    /// </summary>
     public class DatabaseUpdater
     {
 
@@ -20,7 +23,14 @@ namespace API.Backend
         {
             this.DoesDbScriptTableExist();
 
-            return false;
+            if (this.DoesDbScriptTableExist() && this.GetNotExecutedScripts().Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public void Update()
@@ -32,9 +42,31 @@ namespace API.Backend
             //Update DbScript table
         }
 
-        private List<DbScript> GetMissingScripts()
+        private List<string> GetNotExecutedScripts()
         {
-            return new List<DbScript>();
+            using var db = new CookingDataContext();
+
+            List<DbScript> executedScripts = db.DbScripts.Where(script => script.Success == true).ToList();
+
+            List<string> allScriptIds = this.GetScripts();
+
+
+            return new List<string>();
+        }
+
+        private List<string> GetScripts()
+        {
+            List<string> scripts = new List<string>();
+
+            string[] filePaths = Directory.GetFiles("DatabaseUpdateScripts", "*.sql");
+
+            foreach (string filePath in filePaths)
+            {
+                string fileName = Path.GetFileName(filePath);
+                scripts.Add(fileName);
+            }
+
+            return scripts;
         }
 
         private bool DoesDbScriptTableExist()

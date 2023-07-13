@@ -11,7 +11,7 @@ public partial class DbScript
     /// <summary>
     /// The id of the script
     /// </summary>
-    public int ScriptId { get; set; }
+    public string ScriptId { get; set; } = null!;
 
     /// <summary>
     /// states if the script was executed successfully

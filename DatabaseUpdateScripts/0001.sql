@@ -1,5 +1,5 @@
 CREATE TABLE DB_Scripts (
-	script_id int NOT NULL,
+	script_id char(10) NOT NULL,
 	success bit NOT NULL,
 	output nvarchar(MAX),
 	last_execution datetime NOT NULL

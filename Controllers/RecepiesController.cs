@@ -74,7 +74,7 @@ namespace API.Controllers
                     return this.NotFound();
                 }
 
-                RecepieDTO recipeDTO = new ()
+                RecepieDTO recipeDTO = new()
                 {
                     Id = recipe.Id,
                     Name = recipe.Name,
