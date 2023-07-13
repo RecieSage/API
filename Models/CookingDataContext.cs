@@ -7,46 +7,66 @@ namespace API.Models;
 /// <summary>
 /// Database context manager
 /// </summary>
-public partial class CookingDevContext : DbContext
+public partial class CookingDataContext : DbContext
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// Initializes a new instance of the <see cref="CookingDataContext"/> class.
     /// </summary>
-    public CookingDevContext()
+    public CookingDataContext()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// Initializes a new instance of the <see cref="CookingDataContext"/> class.
     /// </summary>
     /// <param name="options">Instance of <see cref="DbContextOptions"/></param>
-    public CookingDevContext(DbContextOptions<CookingDevContext> options)
+    public CookingDataContext(DbContextOptions<CookingDataContext> options)
         : base(options)
     {
     }
 
     /// <summary>
-    /// Gets or sets the <see cref="Ingredient"/> table
+    /// ALters the <see cref="DbScript"/> table
+    /// </summary>
+    public virtual DbSet<DbScript> DbScripts { get; set; }
+
+    /// <summary>
+    /// Alters the <see cref="Ingredient"/> table
     /// </summary>
     public virtual DbSet<Ingredient> Ingredients { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Recipe"/> table
+    /// Alters the <see cref="Recipe"/> table
     /// </summary>
     public virtual DbSet<Recipe> Recipes { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="RecipeIngredient"/> table
+    /// Alters the <see cref="RecipeIngredient"/> table
     /// </summary>
     public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
+    => optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<DbScript>(entity =>
+        {
+            entity.ToTable("DB_Scripts");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.LastExecution)
+                .HasColumnType("datetime")
+                .HasColumnName("last_execution");
+            entity.Property(e => e.Output).HasColumnName("output");
+            entity.Property(e => e.ScriptId)
+                .HasMaxLength(10)
+                .HasColumnName("script_id");
+            entity.Property(e => e.Success).HasColumnName("success");
+        });
+
         modelBuilder.Entity<Ingredient>(entity =>
         {
             entity.ToTable("Ingredient");

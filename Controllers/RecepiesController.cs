@@ -26,7 +26,7 @@ namespace API.Controllers
         public ActionResult<List<RecepieMinDTO>> GetRecipes([FromQuery] string? search)
         {
             // Return all Database Entries
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 var recipes = new List<Recipe>();
 
@@ -65,7 +65,7 @@ namespace API.Controllers
         public ActionResult<RecepieDTO> GetRecipe(int id)
         {
             // Return a Database Entry
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 Recipe? recipe = db.Recipes.Find(id);
 
@@ -121,7 +121,7 @@ namespace API.Controllers
             };
 
             // Create a Recipe Entry and get the ID
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 db.Recipes.Add(recipeInDB);
                 db.SaveChanges();
@@ -129,7 +129,7 @@ namespace API.Controllers
             }
 
             // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 foreach (var ingredient in recipedto.Ingredients)
                 {
@@ -170,7 +170,7 @@ namespace API.Controllers
         public ActionResult DeleteRecipe(int id)
         {
             // Delete a Database Entry
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 var recipe = db.Recipes.Find(id);
                 if (recipe == null)
@@ -196,7 +196,7 @@ namespace API.Controllers
         public ActionResult<RecepieDTO> UpdateRecipe(int id, RecepieDTO recipedto)
         {
             // Update a Database Entry
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 var recipe = db.Recipes.Find(id);
                 if (recipe == null)
@@ -210,7 +210,7 @@ namespace API.Controllers
             }
 
             // Delete all RecipeIngredient Entries
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 var recipeIngredients = db.RecipeIngredients.Where(ri => ri.RecipeId == id);
                 db.RecipeIngredients.RemoveRange(recipeIngredients);
@@ -218,7 +218,7 @@ namespace API.Controllers
             }
 
             // Create all Ingredient Entries if they don't exist and create the RecipeIngredient Entries
-            using (var db = new CookingDevContext())
+            using (var db = new CookingDataContext())
             {
                 foreach (var ingredient in recipedto.Ingredients)
                 {
