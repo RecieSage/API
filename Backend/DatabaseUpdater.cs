@@ -10,7 +10,6 @@ namespace API.Backend
     /// </summary>
     public class DatabaseUpdater
     {
-
         /// <summary>
         /// Checks if an update is available by verifying if the database
         /// has the 'DB_Scripts' table and if there are new update scripts
@@ -160,7 +159,6 @@ namespace API.Backend
             }
 
             return false;
-
         }
 
         private static List<string> MissingScriptsCompare(List<DbScript> executedScripts, List<string> allScripts)

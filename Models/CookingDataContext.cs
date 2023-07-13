@@ -10,14 +10,14 @@ namespace API.Models;
 public partial class CookingDataContext : DbContext
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// Initializes a new instance of the <see cref="CookingDataContext"/> class.
     /// </summary>
     public CookingDataContext()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CookingDevContext"/> class.
+    /// Initializes a new instance of the <see cref="CookingDataContext"/> class.
     /// </summary>
     /// <param name="options">Instance of <see cref="DbContextOptions"/></param>
     public CookingDataContext(DbContextOptions<CookingDataContext> options)
@@ -45,9 +45,11 @@ public partial class CookingDataContext : DbContext
     /// </summary>
     public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; }
 
+    /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     => optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING"));
 
+    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DbScript>(entity =>
