@@ -57,8 +57,6 @@ namespace API
                 databaseUpdater.Update();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
             app.MapControllers();
