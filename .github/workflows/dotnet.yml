@@ -20,8 +20,8 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: Restore dependencies "RecipeSage API.sln"
-      run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore "RecipeSage API.sln"
     - name: Build
       run: dotnet build "RecipeSage API.sln" --no-restore -warnaserror
 #     - name: Test

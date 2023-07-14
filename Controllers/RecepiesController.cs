@@ -1,8 +1,6 @@
 ﻿using API.Models;
 using API.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Entity;
 using System.Net.Mime;
 
 namespace API.Controllers
