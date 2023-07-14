@@ -5,6 +5,9 @@ using System.Net.Mime;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// API Route for miscellaneous endpoints
+    /// </summary>
     [ApiController]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -21,7 +24,7 @@ namespace API.Controllers
         {
             return this.Ok(new PingDTO()
             {
-                version = this.GetType().Assembly.GetName().Version?.ToString() ?? "unset",
+                Version = this.GetType().Assembly.GetName().Version?.ToString() ?? "unset",
             });
         }
     }
