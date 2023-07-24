@@ -1,5 +1,8 @@
 <div align="center">
-    <img src="https://github.com/RecieSage/API/assets/45263590/d9d580e1-92b9-4737-a63f-248dfb524e09" width="100%" />
+    <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://github.com/RecieSage/API/assets/45263590/86aec65b-37c7-43c0-b0da-ecb965f00b3d">
+          <img src="https://github.com/RecieSage/API/assets/45263590/d475fd0b-c255-42ad-b557-a2631a786f15">
+    </picture>
     <strong>
         The Rest-API Service for the <a href="https://github.com/RecieSage">RecieSage Project</a>
     </strong><br><br>
